@@ -51,18 +51,13 @@ namespace BigCommerceSampleAppDotnetCore.Controllers
 
 			string expectedSignature = CreateToken(jsonStr, BCClientSecret);
 
-			if (!HMACSHA256.Equals(signature, expectedSignature)) // This doesn't work
+			if (!string.Equals(signature, expectedSignature)) // this works!
 			{
 				Console.WriteLine("Bad signed request from BigCommerce!");
 			}
 
 			return jsonStr;
 		}
-
-		/* Method taken from
-		 * 
-		 * https://www.jokecamp.com/blog/examples-of-creating-base64-hashes-using-hmac-sha256-in-different-languages/#csharp
-		 */
 
 		string CreateToken(string message, string secret)
 		{
@@ -74,8 +69,20 @@ namespace BigCommerceSampleAppDotnetCore.Controllers
 			using (var hmacsha256 = new HMACSHA256(keyByte))
 			{
 				byte[] hashmessage = hmacsha256.ComputeHash(messageBytes);
-				return Convert.ToBase64String(hashmessage);
+				return ToHexString(hashmessage);
 			}
 		}
+		
+	        public static string ToHexString(byte[] array)
+		{
+		    StringBuilder hex = new StringBuilder(array.Length * 2);
+		    foreach (byte b in array)
+		    {
+			hex.AppendFormat("{0:x2}", b);
+		    }
+		    return hex.ToString();
+		}
+		
+		
 	}
 }
